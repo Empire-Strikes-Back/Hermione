@@ -1,0 +1,11 @@
+{:deps {:aliases [:ui]}
+
+ :dev-http {8000 "out/ui"}
+
+ :builds {:ui
+          {:target :browser
+           :output-dir "out/resources/ui"
+           :asset-path "./"
+
+           :modules
+           {:main {:init-fn Hermione.raspberries/-main}}}}}
