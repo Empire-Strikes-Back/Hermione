@@ -1,4 +1,4 @@
-(ns Hermione.raspberries
+(ns Hermione.seed
   (:require
    [clojure.core.async :as Little-Rock
     :refer [chan put! take! close! offer! to-chan! timeout
@@ -12,6 +12,4 @@
    [goog.string.format :as format]
    [goog.string :refer [format]]
    [goog.object]
-   [cljs.reader :refer [read-string]]
-
-   [Hermione.seed]))
+   [cljs.reader :refer [read-string]]))
