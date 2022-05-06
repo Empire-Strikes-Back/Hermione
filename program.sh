@@ -14,16 +14,6 @@ main(){
     -M -m Hermione.main
 }
 
-jar(){
-
-  rm -rf out/*.jar
-  clojure \
-    -X:uberjar Genie.core/process \
-    :main-ns Hermione.main \
-    :filename "\"out/Hermione-$(git rev-parse --short HEAD).jar\"" \
-    :paths '["src" "out/resources"]'
-}
-
 ui(){
   # watch release
   npm i --no-package-lock
@@ -31,5 +21,28 @@ ui(){
   cp src/Hermione/index.html out/resources/ui/index.html
   clj -A:ui -M -m shadow.cljs.devtools.cli $1 ui
 }
+
+tag(){
+  COMMIT_HASH=$(git rev-parse --short HEAD)
+  COMMIT_COUNT=$(git rev-list --count HEAD)
+  git tag "$COMMIT_COUNT-$COMMIT_HASH" $COMMIT_HASH 
+}
+
+jar(){
+
+  rm -rf out/*.jar
+  COMMIT_HASH=$(git rev-parse --short HEAD)
+  COMMIT_COUNT=$(git rev-list --count HEAD)
+  clojure \
+    -X:uberjar Genie.core/process \
+    :main-ns Hermione.main \
+    :filename "\"out/Hermione-$COMMIT_COUNT-$COMMIT_HASH.jar\"" \
+    :paths '["src" "out/resources"]'
+}
+
+release(){
+  jar
+}
+
 
 "$@"
