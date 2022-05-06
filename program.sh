@@ -1,38 +1,35 @@
 #!/bin/bash
 
 repl(){
-  npm i --no-package-lock
-  mkdir -p out/jar/ui/
-  cp src/Hermione/index.html out/jar/ui/index.html
-  cp package.json out/jar/package.json
-  clj -A:Moana:main:ui -M -m shadow.cljs.devtools.cli clj-repl
-  # (shadow/watch :main)
-  # (shadow/watch :ui)
-  # (shadow/repl :main)
-  # :repl/quit
+  clj \
+    -J-Dclojure.core.async.pool-size=1 \
+    -X:repl Ripley.core/process \
+    :main-ns Hermione.main
 }
 
-shadow(){
-  # watch release
-  npm i --no-package-lock
-  mkdir -p out/jar/ui/
-  cp src/Hermione/index.html out/jar/ui/index.html
-  cp package.json out/jar/package.json
-  clj -A:Moana:main:ui -M -m shadow.cljs.devtools.cli $1 ui main
+
+main(){
+  clojure \
+    -J-Dclojure.core.async.pool-size=1 \
+    -M -m Hermione.main
 }
 
 jar(){
-  rm -rf out
-  shadow release
-  COMMIT_HASH=$(git rev-parse --short HEAD)
-  cd out/jar
-  zip -r ../Hermione-$COMMIT_HASH.zip ./
-  cd ../../
+
+  rm -rf out/*.jar
+  clojure \
+    -X:uberjar Genie.core/process \
+    :main-ns Hermione.main \
+    :filename "\"out/Hermione-$(git rev-parse --short HEAD).jar\"" \
+    :paths '["src" "out/resources"]'
 }
 
-release(){
-  jar
+ui(){
+  # watch release
+  npm i --no-package-lock
+  mkdir -p out/resources/ui/
+  cp src/Hermione/index.html out/resources/ui/index.html
+  clj -A:ui -M -m shadow.cljs.devtools.cli $1 ui
 }
-
 
 "$@"
